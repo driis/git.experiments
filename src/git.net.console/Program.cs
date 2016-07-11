@@ -1,7 +1,7 @@
 ﻿using System;
-using dr.git.net;
+using git.net;
 
-namespace dr.git.net.console
+namespace git.net.console
 {
     public class Program
     {

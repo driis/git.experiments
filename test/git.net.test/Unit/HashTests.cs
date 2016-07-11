@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Xunit;
-using dr.git.net;
+using git.net;
 using Xunit.Sdk;
 
 namespace git.net.test.Unit

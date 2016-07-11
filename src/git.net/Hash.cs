@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace dr.git.net
+namespace git.net
 {
     public class Hash
     {

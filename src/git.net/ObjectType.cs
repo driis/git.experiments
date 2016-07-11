@@ -1,4 +1,4 @@
-namespace dr.git.net
+namespace git.net
 {
     public enum ObjectType
     {
