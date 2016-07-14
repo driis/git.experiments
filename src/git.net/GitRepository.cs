@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,7 +36,21 @@ namespace git.net
                 headFile = await ReadGitFile(refFile);
             }
             Hash head = Hash.FromString(headFile);
-            return new Commit(head, Enumerable.Empty<Hash>());
+            string rawCommit = await ReadGitObject(head);
+            return Commit.Parse(head, rawCommit);
+        }
+
+        private async Task<string> ReadGitObject(Hash obj)
+        {
+            string fullPath = Path.Combine(GitPath, "objects", obj.StringValue.Substring(0, 2), obj.StringValue.Substring(2));
+            using (var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096,
+                FileOptions.Asynchronous))
+            using (var zlib = new Ionic.Zlib.ZlibStream(stream, Ionic.Zlib.CompressionMode.Decompress))
+            using (var reader = new StreamReader(zlib))
+            {
+                return await reader.ReadToEndAsync();
+            }
+            
         }
 
         private async Task<string> ReadGitFile(string relative)
