@@ -28,7 +28,7 @@ namespace System.IO
         /// <returns>A character array of invalid path characters for the current platform.</returns>
         /// <filterpriority>1</filterpriority>
         [Obsolete("Please use GetInvalidPathChars or GetInvalidFileNameChars instead.")]
-        public readonly static char[] InvalidPathChars;
+        public readonly static char[] InvalidPathChars = new char[] { '\"', '<', '>', '|', '\0', '\u0001', '\u0002', '\u0003', '\u0004', '\u0005', '\u0006', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\u000E', '\u000F', '\u0010', '\u0011', '\u0012', '\u0013', '\u0014', '\u0015', '\u0016', '\u0017', '\u0018', '\u0019', '\u001A', '\u001B', '\u001C', '\u001D', '\u001E', '\u001F' };
 
         internal readonly static char[] TrimEndChars;
 
@@ -42,11 +42,7 @@ namespace System.IO
 
         internal readonly static int MaxPath;
 
-        private readonly static int MaxDirectoryLength;
-
         internal readonly static int MaxLongPath;
-
-        private readonly static string Prefix;
 
         private readonly static char[] s_Base32Char;
 
@@ -54,9 +50,7 @@ namespace System.IO
         {
             Path2.DirectorySeparatorChar = '\\';
             Path2.AltDirectorySeparatorChar = '/';
-            Path2.VolumeSeparatorChar = ':';
-            char[] chrArray = new char[] { '\"', '<', '>', '|', '\0', '\u0001', '\u0002', '\u0003', '\u0004', '\u0005', '\u0006', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\u000E', '\u000F', '\u0010', '\u0011', '\u0012', '\u0013', '\u0014', '\u0015', '\u0016', '\u0017', '\u0018', '\u0019', '\u001A', '\u001B', '\u001C', '\u001D', '\u001E', '\u001F' };
-            Path2.InvalidPathChars = chrArray;
+            Path2.VolumeSeparatorChar = ':';            
             char[] chrArray1 = new char[] { '\t', '\n', '\v', '\f', '\r', ' ', '\u0085', '\u00A0' };
             Path2.TrimEndChars = chrArray1;
             char[] chrArray2 = new char[] { '\"', '<', '>', '|', '\0', '\u0001', '\u0002', '\u0003', '\u0004', '\u0005', '\u0006', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\u000E', '\u000F', '\u0010', '\u0011', '\u0012', '\u0013', '\u0014', '\u0015', '\u0016', '\u0017', '\u0018', '\u0019', '\u001A', '\u001B', '\u001C', '\u001D', '\u001E', '\u001F' };
@@ -65,9 +59,7 @@ namespace System.IO
             Path2.InvalidFileNameChars = chrArray3;
             Path2.PathSeparator = ';';
             Path2.MaxPath = 260;
-            Path2.MaxDirectoryLength = 255;
             Path2.MaxLongPath = 32000;
-            Path2.Prefix = "\\\\?\\";
             char[] chrArray4 = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5' };
             Path2.s_Base32Char = chrArray4;
         }
