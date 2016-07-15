@@ -254,3 +254,6 @@ paket-files/
 
 # .cscode
 .vscode/
+
+# Rider
+.idea.git.net
