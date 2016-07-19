@@ -28,8 +28,7 @@ namespace git.net
             if (gitObject.Type != ObjectType.Commit)
                 throw new ArgumentException($"Not {id} is not a Commit object, but a {gitObject.Type}.");
 
-            
-            return new Commit(id, gitObject.GetAuthor(), Enumerable.Empty<Hash>());
+            return new Commit(id, gitObject.GetAuthor(), new []{gitObject.GetParent()});
         }
     }
 
@@ -74,6 +73,16 @@ namespace git.net
                 throw new ArgumentException($"Cannot parse author: {authorValue}");
             return new Author(new EmailAddress(authorParts[1]), authorParts[0]);                                                
         }
+
+        public static Hash GetParent(this RawGitObject gitObject)
+        {
+            if(gitObject == null)
+                throw new ArgumentNullException(nameof(gitObject));
+            
+            return Hash.FromString(gitObject.Properties.ValueOrDefault("parent"));
+        }
+
+        
     }
 
     internal class RawGitObject

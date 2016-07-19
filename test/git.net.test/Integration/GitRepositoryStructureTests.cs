@@ -45,6 +45,14 @@ namespace git.net.test.Integration
             Assert.Equal("john@doe.dk", head.Author.Email);    
             Assert.Equal("John Doe", head.Author.Name);
         }
+
+        [Fact]
+        public async Task CanParseCommitParent()
+        {
+            Commit head = await _gitRepository.Head();
+            
+            Assert.NotEmpty(head.Parents);    
+        }
     }
 }
 
