@@ -17,7 +17,7 @@ namespace git.net
             ObjectType type;
             if (!Enum.TryParse(typeSpecifier, ignoreCase:true, result: out type))
                 throw new ArgumentException($"Not a valid object type: '{typeSpecifier}'", nameof(rawContent));
-            int? length = ParseInt.ToNullable(typeAndLength[1]);
+            int? length = Parse.String.ToIntNullable(typeAndLength[1]);
             if (length == null)
                 throw new ArgumentException($"Not a valid object length: '{typeAndLength[1]}'", nameof(rawContent));
 
@@ -46,9 +46,11 @@ namespace git.net
                 throw new ArgumentException($"Cannot parse author: {authorValue}");
 
             string[] timeParts = authorParts[2].Split(' ');
-            long sinceEpoch = ParseInt.ToInt64Nullable(timeParts[0]) ?? 0;
-            var time = DateTimeOffset.FromUnixTimeSeconds(sinceEpoch);
-            return new Author(new EmailAddress(authorParts[1]), authorParts[0], time);                                                
+            var timePart = timeParts[0];
+            var time = Parse.String.ToTimestamp(timePart);
+            if (time == null)
+                throw  new ArgumentException($"Not a valid authored timestamp: {timePart}");
+            return new Author(new EmailAddress(authorParts[1]), authorParts[0], time.Value);                                                
         }
 
         public static Hash GetParent(this RawGitObject gitObject)
