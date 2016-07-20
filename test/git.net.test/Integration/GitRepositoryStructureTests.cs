@@ -53,6 +53,15 @@ namespace git.net.test.Integration
             
             Assert.NotEmpty(head.Parents);    
         }
+
+        [Fact]
+        public async Task CanParseAuthoredTime()
+        {
+            Commit head = await _gitRepository.Head();
+
+            TimeSpan difference = DateTime.Now - head.Author.Time;
+            Assert.InRange(difference.TotalMinutes, -5, 5);
+        }
     }
 }
 

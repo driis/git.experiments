@@ -44,7 +44,11 @@ namespace git.net
             string [] authorParts = authorValue.Split('<','>').Select(x => x.Trim()).ToArray();
             if (authorParts.Length != 3)
                 throw new ArgumentException($"Cannot parse author: {authorValue}");
-            return new Author(new EmailAddress(authorParts[1]), authorParts[0]);                                                
+
+            string[] timeParts = authorParts[2].Split(' ');
+            long sinceEpoch = ParseInt.ToInt64Nullable(timeParts[0]) ?? 0;
+            var time = DateTimeOffset.FromUnixTimeSeconds(sinceEpoch);
+            return new Author(new EmailAddress(authorParts[1]), authorParts[0], time);                                                
         }
 
         public static Hash GetParent(this RawGitObject gitObject)
