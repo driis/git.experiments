@@ -6,7 +6,7 @@ using git.net;
 
 namespace git.net.test.Integration
 {
-    public class GitRepositoryStructureTests
+    public class GitRepositoryStructureTests : IDisposable
     {
         private readonly NativeGit _nativeGit;
         private readonly GitRepository _gitRepository;
@@ -25,7 +25,7 @@ namespace git.net.test.Integration
              _gitRepository = new GitRepository(repoDirectory);
         }
 
-        ~GitRepositoryStructureTests()
+        public void Dispose()
         {
             _nativeGit.Dispose();
         }
