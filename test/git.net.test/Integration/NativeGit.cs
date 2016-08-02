@@ -65,6 +65,13 @@ namespace git.net.test.Integration
             File.WriteAllText(Path.Combine(_root, path), testContent, Encoding.UTF8);
         }
 
+        public void WriteFileAndCommit(string path, string testContent, string commitMessage)
+        {
+            WriteFile(path, testContent);
+            Add(path);
+            Commit(commitMessage);
+        }
+
         public void Dispose()
         {
             Directory.Delete(_root, true);

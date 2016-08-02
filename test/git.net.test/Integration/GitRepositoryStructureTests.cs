@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using git.net;
+using System.Linq;
 
 namespace git.net.test.Integration
 {
@@ -61,6 +62,17 @@ namespace git.net.test.Integration
 
             TimeSpan difference = DateTime.Now - head.Author.Time;
             Assert.InRange(difference.TotalMinutes, -5, 5);
+        }
+
+        [Fact]
+        public void CanWalkCommitHistory()
+        {
+            _nativeGit.WriteFileAndCommit("test1.txt", "blah", "commit1");
+            _nativeGit.WriteFileAndCommit("test2.txt", "more blah blah", "commit2");
+
+            var history = _gitRepository.History();
+
+            Assert.Equal(3, history.Count());
         }
     }
 }

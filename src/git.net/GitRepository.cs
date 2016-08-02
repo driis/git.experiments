@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -36,8 +37,15 @@ namespace git.net
                 headFile = await ReadGitFile(refFile);
             }
             Hash head = Hash.FromString(headFile);
-            string rawCommit = await ReadGitObject(head);
-            return Commit.Parse(head, rawCommit);
+            return await GetCommit(head);
+        }
+
+        public async Task<Commit> GetCommit(Hash id) 
+        {
+            if (id == null)
+                return null;
+            string rawCommit = await ReadGitObject(id);
+            return Commit.Parse(id, rawCommit);
         }
 
         private async Task<string> ReadGitObject(Hash obj)
@@ -61,6 +69,33 @@ namespace git.net
             using (var reader = new StreamReader(stream, Encoding))
             {
                 return (await reader.ReadToEndAsync()).Trim();
+            }
+        }
+
+        /// <summary>
+        /// Return history of commits in reverse chronological order (as user would expect them), 
+        /// starting from HEAD.
+        /// </summary>
+        public IEnumerable<Commit> History()
+        {
+            Commit head = Head().Result;
+            return History(head);
+        }
+
+        /// <summary>
+        /// Return history of commits in reverse chronological order (as user would expect them), 
+        /// starting from the specified commit.
+        /// </summary>
+        public IEnumerable<Commit> History(Commit start)
+        {
+            Commit current = start;
+            while(current != null)
+            {
+                yield return current;
+                Hash next = current.Parents?.FirstOrDefault();  // todo handle multiple parents
+                if (next == null)
+                    yield break;
+                current = GetCommit(next).Result;
             }
         }
 
