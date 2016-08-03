@@ -69,7 +69,7 @@ namespace git.net.test.Integration
         {
             Commit head = await _gitRepository.Head();
 
-            Assert.Equal("First test commit", head.Message);            
+            Assert.Equal("First test commit.\n", head.Message);            
         }
 
         [Fact]
@@ -78,9 +78,10 @@ namespace git.net.test.Integration
             _nativeGit.WriteFileAndCommit("test1.txt", "blah", "commit1");
             _nativeGit.WriteFileAndCommit("test2.txt", "more blah blah", "commit2");
 
-            var history = _gitRepository.History();
+            var history = _gitRepository.History().ToArray();
 
-            Assert.Equal(3, history.Count());
+            var messages = history.Select(x => x.Message).ToArray();
+            Assert.True(messages.SequenceEqual(new [] {"commit2\n", "commit1\n", "First test commit.\n"}));
         }
     }
 }
