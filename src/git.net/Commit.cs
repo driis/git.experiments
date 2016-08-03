@@ -9,7 +9,8 @@ namespace git.net
     {
         public Author Author { get; }
 
-        public Commit(Hash id, Author author, IEnumerable<Hash> parents) : base(id)
+        public string Message { get; }
+        public Commit(Hash id, Author author, IEnumerable<Hash> parents, string message) : base(id)
         {
             if (author == null)
                 throw new ArgumentNullException(nameof(author));
@@ -18,6 +19,7 @@ namespace git.net
 
             Author = author;
             Parents = parents.ToList();
+            Message = message;
         }
 
         public IReadOnlyCollection<Hash> Parents { get; }
@@ -28,7 +30,7 @@ namespace git.net
             if (gitObject.Type != ObjectType.Commit)
                 throw new ArgumentException($"Not {id} is not a Commit object, but a {gitObject.Type}.");
 
-            return new Commit(id, gitObject.GetAuthor(), new []{gitObject.GetParent()});
+            return new Commit(id, gitObject.GetAuthor(), new []{gitObject.GetParent()}, gitObject.Body);
         }
     }
 }

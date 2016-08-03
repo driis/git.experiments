@@ -65,6 +65,14 @@ namespace git.net.test.Integration
         }
 
         [Fact]
+        public async Task CanParseCommitMessage() 
+        {
+            Commit head = await _gitRepository.Head();
+
+            Assert.Equal("First test commit", head.Message);            
+        }
+
+        [Fact]
         public void CanWalkCommitHistory()
         {
             _nativeGit.WriteFileAndCommit("test1.txt", "blah", "commit1");
