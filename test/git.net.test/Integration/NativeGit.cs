@@ -74,7 +74,11 @@ namespace git.net.test.Integration
 
         public void Dispose()
         {
-            Directory.Delete(_root, true);
+            try
+            {
+                Directory.Delete(_root, true);    
+            }
+            catch(UnauthorizedAccessException) { /* empty catch by design */ }
         }
     }
 }
