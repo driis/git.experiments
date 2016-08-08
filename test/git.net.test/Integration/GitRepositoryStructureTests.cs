@@ -78,10 +78,27 @@ namespace git.net.test.Integration
             _nativeGit.WriteFileAndCommit("test1.txt", "blah", "commit1");
             _nativeGit.WriteFileAndCommit("test2.txt", "more blah blah", "commit2");
 
-            var history = _gitRepository.History().ToArray();
+            var history = _gitRepository.History();
 
             var messages = history.Select(x => x.Message).ToArray();
             Assert.True(messages.SequenceEqual(new [] {"commit2\n", "commit1\n", "First test commit.\n"}));
+        }
+
+        [Fact]
+        public void CanWalkCommitHistoryWithMultipleParents()
+        {
+            _nativeGit.NewBranch("test");
+            _nativeGit.WriteFileAndCommit("test1.txt", "freom test branch", "01");
+            _nativeGit.Checkout("master");
+            _nativeGit.WriteFileAndCommit("test2.txt", "from master branch", "02");
+            _nativeGit.WriteFileAndCommit("test1.txt", "this shouæld make a conflict", "03");
+            _nativeGit.Merge("test");
+
+            _nativeGit.WriteFileAndCommit("test1.txt", "resolved", "04 merge commit");
+
+            var history = _gitRepository.History();
+            var messages = history.Select(x => x.Message).ToArray();
+            Assert.True(messages.SequenceEqual(new[] { "04 merge commit\n", "03\n", "02\n", "01\n", "First test commmit.\n" }));
         }
     }
 }

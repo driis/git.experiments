@@ -80,5 +80,20 @@ namespace git.net.test.Integration
             }
             catch(UnauthorizedAccessException) { /* empty catch by design */ }
         }
+
+        public void NewBranch(string branchName)
+        {
+            RunGitCommand($"checkout -b {branchName}");
+        }
+
+        public void Checkout(string branchName)
+        {
+            RunGitCommand($"checkout {branchName}");
+        }
+
+        public void Merge(string branchName)
+        {
+            RunGitCommand($"merge {branchName}");
+        }
     }
 }
