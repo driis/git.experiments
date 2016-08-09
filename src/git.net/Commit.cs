@@ -30,7 +30,7 @@ namespace git.net
             if (gitObject.Type != ObjectType.Commit)
                 throw new ArgumentException($"Not {id} is not a Commit object, but a {gitObject.Type}.");
 
-            return new Commit(id, gitObject.GetAuthor(), new []{gitObject.GetParent()}, gitObject.Body);
+            return new Commit(id, gitObject.GetAuthor(), gitObject.GetParents(), gitObject.Body);
         }
     }
 }

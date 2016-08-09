@@ -40,7 +40,7 @@ namespace git.net.test.Integration
             RunGitCommand($"config {configuration}");
         }
 
-        private void RunGitCommand(string gitArguments)
+        private void RunGitCommand(string gitArguments, bool throwOnNonZeroExit = true)
         {
             ProcessStartInfo psi = new ProcessStartInfo("git", gitArguments)
             {
@@ -54,8 +54,8 @@ namespace git.net.test.Integration
 
             Console.WriteLine(p.StandardOutput.ReadToEnd());
             Console.WriteLine(p.StandardError.ReadToEnd());
-            if (p.ExitCode != 0)
-            {
+            if (p.ExitCode != 0 && throwOnNonZeroExit)
+            {                
                 throw new Exception($"Process exited with non-zero exitcode: {p.ExitCode}");
             }
         }
@@ -91,9 +91,9 @@ namespace git.net.test.Integration
             RunGitCommand($"checkout {branchName}");
         }
 
-        public void Merge(string branchName)
+        public void Merge(string branchName, bool throwOnConflicts)
         {
-            RunGitCommand($"merge {branchName}");
+            RunGitCommand($"merge {branchName}", throwOnConflicts);
         }
     }
 }

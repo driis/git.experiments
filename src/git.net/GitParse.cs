@@ -22,18 +22,26 @@ namespace git.net
                 throw new ArgumentException($"Not a valid object length: '{typeAndLength[1]}'", nameof(rawContent));
 
             StringReader reader = new StringReader(rawContent);
-            string prop;
-            Dictionary<string,string> properties = new Dictionary<string, string>();
-            while ((prop = reader.ReadLine()) != null)
-            {
-                var kv = prop.Split(new[] {' '}, 2);
-                if (kv.Length != 2)
-                    break;
-                properties.Add(kv[0], kv[1]);
-            }
+            var lines = LinesFromReader(reader);
+            var keyValues = lines.Select(x => x.Split(new [] {' '},2))
+                .Where(x => x.Length == 2)
+                .Select(kv => new { key = kv[0], val = kv[1]})
+                .GroupBy(x => x.key)
+                .Select(g => new { key = g.Key, val = String.Join("|",g.Select(x => x.val)) })
+                .ToDictionary(kv => kv.key, kv => kv.val);
 
             string body = reader.ReadToEnd();
-            return new RawGitObject(type,properties, body);
+            return new RawGitObject(type,keyValues, body);
+        }
+
+        private static IEnumerable<string> LinesFromReader(TextReader reader)
+        {
+            string line  = reader.ReadLine();
+            while(!String.IsNullOrEmpty(line))
+            {
+                yield return line;
+                line = reader.ReadLine();
+            }     
         }
 
         public static Author GetAuthor(this RawGitObject gitObject)
@@ -53,17 +61,13 @@ namespace git.net
             return new Author(new EmailAddress(authorParts[1]), authorParts[0], time.Value);                                                
         }
 
-        public static Hash GetParent(this RawGitObject gitObject)
+        public static IEnumerable<Hash> GetParents(this RawGitObject gitObject)
         {
             if(gitObject == null)
                 throw new ArgumentNullException(nameof(gitObject));
 
-            var parent = gitObject.Properties.ValueOrDefault("parent");
-            if (parent == null)
-                return null;
-            return Hash.FromString(parent);
+            var parents = gitObject.Properties.ValueOrDefault("parent")?.Split('|');
+            return parents?.Select(Hash.FromString) ?? Enumerable.Empty<Hash>();
         }
-
-        
     }
 }

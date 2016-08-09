@@ -50,9 +50,18 @@ namespace git.net.test.Integration
         [Fact]
         public async Task CanParseCommitParent()
         {
+            _nativeGit.WriteFileAndCommit("test.txt", "bogus", "a commit message");
             Commit head = await _gitRepository.Head();
             
             Assert.NotEmpty(head.Parents);    
+        }
+
+        [Fact]
+        public async Task ParentsCanBeEmpty()
+        {
+            Commit head = await _gitRepository.Head();
+            
+            Assert.Empty(head.Parents);    
         }
 
         [Fact]
@@ -92,7 +101,7 @@ namespace git.net.test.Integration
             _nativeGit.Checkout("master");
             _nativeGit.WriteFileAndCommit("test2.txt", "from master branch", "02");
             _nativeGit.WriteFileAndCommit("test1.txt", "this shouæld make a conflict", "03");
-            _nativeGit.Merge("test");
+            _nativeGit.Merge("test", throwOnConflicts:false);
 
             _nativeGit.WriteFileAndCommit("test1.txt", "resolved", "04 merge commit");
 

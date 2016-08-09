@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static git.net.AsyncBridge;
 
 namespace git.net
 {
@@ -78,7 +79,7 @@ namespace git.net
         /// </summary>
         public IEnumerable<Commit> History()
         {
-            Commit head = Head().Result;
+            Commit head = RunSync(Head());
             return History(head);
         }
 
@@ -86,17 +87,24 @@ namespace git.net
         /// Return history of commits in reverse chronological order (as user would expect them), 
         /// starting from the specified commit.
         /// </summary>
-        public IEnumerable<Commit> History(Commit start)
+        public IEnumerable<Commit> History(Commit commit)
         {
-            Commit current = start;
-            while(current != null)
+            return History(commit, commit.Parents.Select(p => RunSync(GetCommit(p))));
+        }
+
+        private IEnumerable<Commit> History(Commit current, IEnumerable<Commit> branches)
+        {
+            yield return current;
+            var parents = current.Parents.Select(p => RunSync(GetCommit(p)));
+            var candidates = parents.Concat(branches).ToList();
+            var next = candidates.OrderByDescending(x => x.Author.Time).FirstOrDefault();
+            if (next != null)
             {
-                yield return current;
-                Hash next = current.Parents?.FirstOrDefault();  // todo handle multiple parents
-                if (next == null)
-                    yield break;
-                current = GetCommit(next).Result;
+                candidates.Remove(next);
+                foreach (var commit in History(next, candidates))
+                    yield return commit;
             }
+
         }
 
         private bool Exists(string relative)
