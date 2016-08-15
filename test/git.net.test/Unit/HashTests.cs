@@ -4,6 +4,7 @@ using System.Text;
 using Xunit;
 using git.net;
 using Xunit.Sdk;
+using FluentAssertions;
 
 namespace git.net.test.Unit
 {
@@ -16,8 +17,8 @@ namespace git.net.test.Unit
 
             var hash = Hash.FromString(hashString);
 
-            Assert.NotNull(hash);
-            Assert.Equal(hashString, hash.ToString());
+            hash.Should().NotBeNull();
+            hash.ToString().Should().Be(hashString);
         }
 
         [Theory]
@@ -28,7 +29,9 @@ namespace git.net.test.Unit
         [InlineData("d670460b4b4aece5915caf5c68d12f560x9fe3e4")]     // non-hex digit
         public void FromString_ValidatesInput(string badInput)
         {
-            Assert.ThrowsAny<ArgumentException>(() => Hash.FromString(badInput));
+            Action act = () => Hash.FromString(badInput);
+
+            act.ShouldThrow<ArgumentException>();
         }
 
         [Theory]
@@ -39,7 +42,7 @@ namespace git.net.test.Unit
             var actual = Hash.Calculate(type, content);
             var expectedHash = Hash.FromString(expected);
 
-            Assert.Equal(expectedHash, actual);
+            actual.Should().Be(expectedHash);
         }
 
         [Fact]
@@ -48,7 +51,7 @@ namespace git.net.test.Unit
             var sha = SHA1.Create();
             var hash = sha.ComputeHash(Encoding.UTF8.GetBytes("blob 5\0hello")).AsHexString();
 
-            Assert.Equal(hash, "b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0");
+            hash.Should().Be("b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0");
         }
     }
 }

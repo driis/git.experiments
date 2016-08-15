@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Xunit;
 using git.net;
 using System.Linq;
+using FluentAssertions;
 
 namespace git.net.test.Integration
 {
@@ -35,7 +36,7 @@ namespace git.net.test.Integration
         public async Task CanGetHeadCommit()
         {
             Commit head = await _gitRepository.Head();
-            Assert.NotNull(head);
+            head.Should().NotBeNull();
         }
 
         [Fact]
@@ -43,8 +44,8 @@ namespace git.net.test.Integration
         {
             Commit head = await _gitRepository.Head();
             
-            Assert.Equal("john@doe.dk", head.Author.Email);    
-            Assert.Equal("John Doe", head.Author.Name);
+            head.Author.Email.Value.Should().Be("john@doe.dk");
+            head.Author.Name.Should().Be("John Doe");
         }
 
         [Fact]
@@ -53,15 +54,15 @@ namespace git.net.test.Integration
             _nativeGit.WriteFileAndCommit("test.txt", "bogus", "a commit message");
             Commit head = await _gitRepository.Head();
             
-            Assert.NotEmpty(head.Parents);    
+            head.Parents.Should().NotBeEmpty();    
         }
 
         [Fact]
         public async Task ParentsCanBeEmpty()
         {
             Commit head = await _gitRepository.Head();
-            
-            Assert.Empty(head.Parents);    
+
+            head.Parents.Should().BeEmpty();            
         }
 
         [Fact]
@@ -70,7 +71,8 @@ namespace git.net.test.Integration
             Commit head = await _gitRepository.Head();
 
             TimeSpan difference = DateTime.Now - head.Author.Time;
-            Assert.InRange(difference.TotalMinutes, -5, 5);
+
+            head.Author.Time.Should().BeCloseTo(DateTime.Now, precision: 5000);
         }
 
         [Fact]
@@ -78,7 +80,7 @@ namespace git.net.test.Integration
         {
             Commit head = await _gitRepository.Head();
 
-            Assert.Equal("First test commit.\n", head.Message);            
+            head.Message.Should().Be("First test commit.\n");            
         }
 
         [Fact]
@@ -90,7 +92,7 @@ namespace git.net.test.Integration
             var history = _gitRepository.History();
 
             var messages = history.Select(x => x.Message).ToArray();
-            Assert.True(messages.SequenceEqual(new [] {"commit2\n", "commit1\n", "First test commit.\n"}));
+            messages.Should().Equal(new [] {"commit2\n", "commit1\n", "First test commit.\n"});
         }
 
         [Fact]
@@ -107,7 +109,7 @@ namespace git.net.test.Integration
 
             var history = _gitRepository.History();
             var messages = history.Select(x => x.Message).ToArray();
-            Assert.True(messages.SequenceEqual(new[] { "04 merge commit\n", "03\n", "02\n", "01\n", "First test commmit.\n" }));
+            messages.Should().Equal(new[] { "04 merge commit\n", "03\n", "02\n", "01\n", "First test commmit.\n" });
         }
     }
 }
