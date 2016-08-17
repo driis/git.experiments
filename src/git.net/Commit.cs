@@ -32,5 +32,7 @@ namespace git.net
 
             return new Commit(id, gitObject.GetAuthor(), gitObject.GetParents(), gitObject.Body);
         }
+
+
     }
 }

@@ -96,7 +96,7 @@ namespace git.net
         {
             yield return current;
             var parents = current.Parents.Select(p => RunSync(GetCommit(p)));
-            var candidates = parents.Concat(branches).ToList();
+            var candidates = parents.Concat(branches).Distinct().ToList();
             var next = candidates.OrderByDescending(x => x.Author.Time).FirstOrDefault();
             if (next != null)
             {
