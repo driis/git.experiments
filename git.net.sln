@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "git.net", "src\git.net\git.net.xproj", "{6CD3DC8C-E575-4F89-BDCF-ABB77031DC69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "git.net", "src\git.net\git.net.csproj", "{6CD3DC8C-E575-4F89-BDCF-ABB77031DC69}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "git.net.console", "src\git.net.console\git.net.console.xproj", "{1ED74FC7-2C2F-4B10-B2AE-0C11098C6C05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "git.net.console", "src\git.net.console\git.net.console.csproj", "{1ED74FC7-2C2F-4B10-B2AE-0C11098C6C05}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "git.net.test", "test\git.net.test\git.net.test.xproj", "{20EE58C5-A956-4B7B-93A5-6F8F76782781}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "git.net.test", "test\git.net.test\git.net.test.csproj", "{20EE58C5-A956-4B7B-93A5-6F8F76782781}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
