@@ -44,11 +44,11 @@ namespace git.net
             }     
         }
 
-        public static Author GetAuthor(this RawGitObject gitObject)
+        public static Author GetAuthor(this RawGitObject gitObject, string propName = "author")
         {
             if(gitObject == null)
                 throw new ArgumentNullException(nameof(gitObject));
-            string authorValue = gitObject.Properties?.ValueOrDefault("author");            
+            string authorValue = gitObject.Properties?.ValueOrDefault(propName);            
             string [] authorParts = authorValue.Split('<','>').Select(x => x.Trim()).ToArray();
             if (authorParts.Length != 3)
                 throw new ArgumentException($"Cannot parse author: {authorValue}");
@@ -59,6 +59,11 @@ namespace git.net
             if (time == null)
                 throw  new ArgumentException($"Not a valid authored timestamp: {timePart}");
             return new Author(new EmailAddress(authorParts[1]), authorParts[0], time.Value);                                                
+        }
+
+        public static Author GetCommitter(this RawGitObject gitObject)
+        {
+            return GetAuthor(gitObject, "committer");
         }
 
         public static IEnumerable<Hash> GetParents(this RawGitObject gitObject)

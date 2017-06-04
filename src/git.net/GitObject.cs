@@ -18,18 +18,25 @@ namespace git.net
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != this.GetType())
-                return false;
-            return Equals((GitObject) obj);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            var other = obj as GitObject;
+            return other != null && Equals(other);
         }
 
         public override int GetHashCode()
         {
             return (Id != null ? Id.GetHashCode() : 0);
+        }
+
+        public static bool operator ==(GitObject left, GitObject right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(GitObject left, GitObject right)
+        {
+            return !Equals(left, right);
         }
     }
 }

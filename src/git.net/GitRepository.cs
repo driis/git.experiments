@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using static git.net.AsyncBridge;
@@ -89,28 +90,30 @@ namespace git.net
         /// </summary>
         public IEnumerable<Commit> History(Commit commit)
         {
-            return History(commit, commit.Parents.Select(p => RunSync(GetCommit(p))));
+            return History(commit, commit.Parents.Select(p => RunSync(GetCommit(p))).ToArray());
         }
 
-        private IEnumerable<Commit> History(Commit current, IEnumerable<Commit> branches)
+        private IEnumerable<Commit> History(Commit current, Commit[] parents)
         {
             yield return current;
-            var parents = current.Parents.Select(p => RunSync(GetCommit(p)));
-            var candidates = parents.Concat(branches).Distinct().ToList();
-            var next = candidates.OrderByDescending(x => x.Author.Time).FirstOrDefault();
-            if (next != null)
-            {
-                candidates.Remove(next);
-                foreach (var commit in History(next, candidates))
-                    yield return commit;
-            }
-
+            var next = parents.OrderByDescending(x => x.Committer.Time).FirstOrDefault();
+            if (next == null)
+                yield break;
+            var nextParents = next.Parents.Select(p => RunSync(GetCommit(p)));
+            var newParents = parents.Where(p => p != next).Concat(nextParents).ToArray();
+            foreach (var commit in History(next, newParents))
+                yield return commit;
         }
 
         private bool Exists(string relative)
         {
             string fullPath = Path.Combine(GitPath, relative);
             return File.Exists(fullPath);
+        }
+
+        public override string ToString()
+        {
+            return Path.GetDirectoryName(RootPath);
         }
     }
 }

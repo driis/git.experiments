@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Xunit;
 using git.net;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
 
 namespace git.net.test.Integration
@@ -14,7 +15,7 @@ namespace git.net.test.Integration
         private readonly GitRepository _gitRepository;
         public GitRepositoryStructureTests()
         {
-            string name = $"native-git-test-{System.Guid.NewGuid().ToString("N")}";
+            string name = $"native-git-test-{System.Guid.NewGuid():N}";
             string repoDirectory = Path.Combine(Path.GetTempPath(), name);
             Console.WriteLine($"Temporary Git repo for testing: {repoDirectory}");
             _nativeGit = new NativeGit(repoDirectory);
@@ -99,17 +100,19 @@ namespace git.net.test.Integration
         public void CanWalkCommitHistoryWithMultipleParents()
         {
             _nativeGit.NewBranch("test");
-            _nativeGit.WriteFileAndCommit("test1.txt", "freom test branch", "01");
+            _nativeGit.WriteFileAndCommit("test1.txt", "from test branch", "01");
             _nativeGit.Checkout("master");
+            Thread.Sleep(1000);
             _nativeGit.WriteFileAndCommit("test2.txt", "from master branch", "02");
-            _nativeGit.WriteFileAndCommit("test1.txt", "this shouæld make a conflict", "03");
+            Thread.Sleep(1000);
+            _nativeGit.WriteFileAndCommit("test1.txt", "this should make a conflict", "03");
             _nativeGit.Merge("test", throwOnConflicts:false);
 
             _nativeGit.WriteFileAndCommit("test1.txt", "resolved", "04 merge commit");
 
             var history = _gitRepository.History();
             var messages = history.Select(x => x.Message).ToArray();
-            messages.Should().Equal(new[] { "04 merge commit\n", "03\n", "02\n", "01\n", "First test commmit.\n" });
+            messages.Should().Equal(new[] { "04 merge commit\n", "03\n", "02\n", "01\n", "First test commit.\n" });
         }
     }
 }
